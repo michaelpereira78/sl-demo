@@ -1,3 +1,7 @@
+---
+metadata: {}
+---
+
 # Life Insurance
 
 Financially protect your loved ones with the right insurance plan.
