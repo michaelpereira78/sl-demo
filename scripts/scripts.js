@@ -1,5 +1,3 @@
-// Global Scripts for EDS site
-
 /**
  * Load CSS files dynamically
  * @param {string} href - Path to CSS file
@@ -111,6 +109,23 @@ function trackEvent(eventName, eventData = {}) {
 }
 
 /**
+ * Load lazy styles after page rendersa
+ */
+function loadLazyStyles() {
+  // Load lazy styles after LCP
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => {
+      loadCSS('/styles/lazy-styles.css');
+    });
+  } else {
+    // Fallback for browsers without requestIdleCallback
+    setTimeout(() => {
+      loadCSS('/styles/lazy-styles.css');
+    }, 2000);
+  }
+}
+
+/**
  * Initialize all functionality on page load
  */
 document.addEventListener('DOMContentLoaded', () => {
@@ -119,24 +134,15 @@ document.addEventListener('DOMContentLoaded', () => {
   initPostalForms();
   initSmoothScroll();
   
+  // Load lazy styles after LCP
+  loadLazyStyles();
+  
   // Track page view
   trackEvent('page_view', {
     page_title: document.title,
     page_path: window.location.pathname
   });
-
-  // Load lazy styles
-  loadCSS('/styles/lazy-styles.css');
 });
-
-/**
- * Load fonts asynchronously
- */
-if (document.fonts) {
-  document.fonts.ready.then(() => {
-    document.documentElement.classList.add('fonts-loaded');
-  });
-}
 
 /**
  * Handle button clicks for tracking
@@ -158,5 +164,6 @@ export default {
   initPostalForms,
   initTheme,
   initSmoothScroll,
-  trackEvent
+  trackEvent,
+  loadLazyStyles
 };
