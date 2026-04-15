@@ -1,0 +1,53 @@
+/* Feature Block Styles */
+
+.feature {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+}
+
+.feature-content {
+  flex: 1;
+  min-width: 300px;
+}
+
+.feature-content h2 {
+  color: #00427a;
+}
+
+.feature-content p {
+  color: #666;
+  line-height: 1.8;
+}
+
+.feature-content a {
+  color: #00427a;
+  font-weight: 600;
+}
+
+.feature-media {
+  flex: 1;
+  min-width: 300px;
+}
+
+.feature-media img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 66, 122, 0.1);
+}
+
+@media (max-width: 768px) {
+  .feature {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .feature-content,
+  .feature-media {
+    width: 100%;
+    min-width: auto;
+  }
+}

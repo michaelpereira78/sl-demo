@@ -1,0 +1,52 @@
+# Git files
+.git
+.gitignore
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Node modules
+node_modules
+package-lock.json
+yarn.lock
+
+# Build artifacts
+dist
+build
+.cache
+
+# Testing
+test
+tests
+*.test.js
+__tests__
+
+# Documentation
+docs
+
+# Logs
+*.log
+npm-debug.log
+yarn-error.log
+
+# Temporary files
+temp
+tmp
+.temp
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# Environment files
+.env
+.env.local
+
+# Config files that shouldn't be served
+fstab.yaml
