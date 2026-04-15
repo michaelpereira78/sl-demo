@@ -2,13 +2,13 @@
 console.log('AEM EDS Demo loaded successfully!');
 
 // Simple functionality
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded');
 
   // Add some interactive elements
   const button = document.querySelector('button');
   if (button) {
-    button.addEventListener('click', function() {
+    button.addEventListener('click', () => {
       alert('Thank you for your interest! This is a demo page.');
     });
   }
@@ -42,5 +42,5 @@ function trackEvent(eventName, data) {
 // Track page view
 trackEvent('page_view', {
   page: window.location.pathname,
-  timestamp: new Date().toISOString()
+  timestamp: new Date().toISOString(),
 });
