@@ -3,8 +3,8 @@
  * This handles loading blocks, decorating them, and applying styles/scripts
  */
 
-const LCP_BLOCKS = ['hero', 'banner']; // Blocks that are critical for LCP
-const BLOCK_RETRY_MAX = 3;
+const LCP_BLOCKS = ['hero', 'banner'];
+const BLOCK_CSS_LOADED = {};
 
 /**
  * Get block configuration
@@ -20,12 +20,15 @@ function getBlockConfig(blockName) {
  * Load block CSS
  */
 async function loadBlockCSS(blockName) {
+  if (BLOCK_CSS_LOADED[blockName]) return;
+  
   const { cssFile } = getBlockConfig(blockName);
   try {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = cssFile;
     document.head.appendChild(link);
+    BLOCK_CSS_LOADED[blockName] = true;
   } catch (e) {
     console.warn(`Failed to load CSS for block: ${blockName}`, e);
   }
@@ -46,29 +49,41 @@ async function loadBlockJS(blockName) {
 }
 
 /**
- * Decorate block with CSS class
+ * Extract block name from section element
  */
-function decorateBlock(block) {
-  const blockName = block.getAttribute('data-block-name') || 
-                    Array.from(block.classList).find(cls => !cls.includes('block'));
+function getBlockName(section) {
+  // Look for block-specific classes
+  const classes = Array.from(section.classList);
   
-  if (blockName && !block.classList.contains(blockName)) {
-    block.classList.add(blockName);
+  // First, check for explicit data attribute
+  if (section.dataset.blockName) {
+    return section.dataset.blockName;
   }
   
-  return blockName;
+  // Extract from class names
+  for (const cls of classes) {
+    if (cls !== 'section' && cls !== 'block') {
+      return cls;
+    }
+  }
+  
+  return null;
 }
 
 /**
- * Create blocks from HTML structure
+ * Decorate sections with block functionality
  */
-function initBlocks() {
-  const blocks = document.querySelectorAll('[data-block-name], .block');
+async function decorateBlocks(main) {
+  const sections = main.querySelectorAll('[data-block-name], div[class*="section"]');
   
-  blocks.forEach(async (block) => {
-    const blockName = decorateBlock(block);
+  for (const section of sections) {
+    const blockName = getBlockName(section);
     
-    if (blockName) {
+    if (blockName && blockName !== 'section') {
+      // Add block class for styling
+      section.classList.add('block');
+      section.classList.add(blockName);
+      
       // Load block CSS
       await loadBlockCSS(blockName);
       
@@ -76,27 +91,26 @@ function initBlocks() {
       const blockDecorator = await loadBlockJS(blockName);
       if (blockDecorator && typeof blockDecorator === 'function') {
         try {
-          await blockDecorator(block);
+          await blockDecorator(section);
         } catch (e) {
           console.error(`Error decorating block: ${blockName}`, e);
         }
       }
     }
-  });
+  }
 }
 
 /**
  * Initialize document
  */
-function init() {
-  // Decorate main element
+async function init() {
   const main = document.querySelector('main');
-  if (!main) return;
+  if (!main) {
+    console.warn('No main element found on page');
+    return;
+  }
   
-  // Initialize blocks
-  initBlocks();
-  
-  // Mark document as loaded
+  await decorateBlocks(main);
   document.documentElement.classList.add('aem-loaded');
 }
 
@@ -113,7 +127,7 @@ export default {
   getBlockConfig,
   loadBlockCSS,
   loadBlockJS,
-  decorateBlock,
-  initBlocks,
+  getBlockName,
+  decorateBlocks,
   init
 };
